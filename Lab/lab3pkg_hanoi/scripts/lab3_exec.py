@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 
 '''
+ECE470 Lab3
+Group# SandArm
+Jie Wang, Xuan Tang, Shenghua Ye
+03/17/2024
+
 We get inspirations of Tower of Hanoi algorithm from the website below.
 This is also on the lab manual.
 Source: https://www.cut-the-knot.org/recurrence/hanoi.shtml
@@ -56,15 +61,7 @@ Q[2,2] = np.radians([-56.15,-119.15,-103.80,-46.96,90.33,22.00])
 Q[2,3] = np.radians([-56.15,-109.84,-96.94,-63.13,90.36,21.90])
 
 
-
-
-
-
 ############### Your Code End Here ###############
- 
- 
-
- 
  
 ############## Your Code Start Here ##############
 
@@ -76,12 +73,10 @@ def gripper_input_callback(msg):
 	global current_io_0
 	global digital_in_0
 	global analog_in_0
-
+	
 	digital_in_0 = msg.digital_in_states
 	analog_in_0 = msg.analog_in_states
 	current_io_0 = msg.flag_states
-
-
  
 ############### Your Code End Here ###############
  
@@ -183,7 +178,7 @@ def move_block(pub_setjoint, pub_setio, start_loc, start_height, end_loc, end_he
     move_arm(pub_setjoint, Q[end_loc][3])
     time.sleep(1)
 
-
+# todo: debug the start height and end height
 def hanoi(n, start, mid, end,pub_setjoint, pub_setio):
     if n == 1:
         move_block(pub_setjoint, pub_setio, start, 0, end, 2)
@@ -215,6 +210,13 @@ def main():
     # | Q[0][2][0] Q[1][2][0] Q[2][2][0] |   Contact point of third block
     # | Q[0][1][0] Q[1][1][0] Q[2][1][0] |   Contact point of second block
     # | Q[0][0][0] Q[1][0][0] Q[2][0][0] |   Contact point of bottom block
+
+ # TODO 
+	# - problem is at the addressing of Q, which doesn't align with above 
+	# - why do we need so many contact and above point? to check that, currenly, all we have is simply the contact point 
+	# - if cont, can it work ? or we must to construct a same structure 
+	# - 
+
 
     # First index - From left to right position A, B, C
     # Second index - From "bottom" to "top" position 1, 2, 3
@@ -264,24 +266,24 @@ def main():
 	mid = 1
 	des = 2
 
-	# while(not input_done):
-	# 	input_string = raw_input("Enter number of loops <Either 1 2 3 or 0 to quit> ")
-	# 	print("You entered " + input_string + "\n")
+	while(not input_done):
+		input_string = input("Enter number of loops <Either 1 2 3 or 0 to quit>: ")
+		print("You entered " + input_string + "\n")
 
-	# 	if(int(input_string) == 1):
-	# 		input_done = 1
-	# 		loop_count = 1
-	# 	elif (int(input_string) == 2):
-	# 		input_done = 1
-	# 		loop_count = 2
-	# 	elif (int(input_string) == 3):
-	# 		input_done = 1
-	# 		loop_count = 3
-	# 	elif (int(input_string) == 0):
-	# 		print("Quitting... ")
-	# 		# sys.exit()
-	# 	else:
-	# 		print("Please just enter the character 1 2 3 or 0 to quit \n\n")
+		if(int(input_string) == 1):
+			input_done = 1
+			loop_count = 1
+		elif (int(input_string) == 2):
+			input_done = 1
+			loop_count = 2
+		elif (int(input_string) == 3):
+			input_done = 1
+			loop_count = 3
+		elif (int(input_string) == 0):
+			print("Quitting... ")
+			# sys.exit()
+		else:
+			print("Please just enter the character 1 2 3 or 0 to quit \n\n")
 
 
 
@@ -297,12 +299,13 @@ def main():
 	rospy.loginfo("Sending Goals ...")
  
 	loop_rate = rospy.Rate(SPIN_RATE)
- 
+	# TODO what is this?
+	
 	############## Your Code Start Here ##############
 	# TODO: modify the code so that UR3 can move tower accordingly from user input
  
- 
-	move_block(pub_	setjoint, pub_setio, start, 0, des,   2)
+	hanoi(3,start,mid, des, pub_setjoint,pub_setio)
+	move_block(pub_setjoint, pub_setio, start, 0, des,   2)
 	
 
 

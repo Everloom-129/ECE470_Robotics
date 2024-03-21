@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 
 '''
-ECE470 Lab3
-Group# SandArm
-Jie Wang, Xuan Tang, Shenghua Ye
-03/17/2024
-
 We get inspirations of Tower of Hanoi algorithm from the website below.
 This is also on the lab manual.
 Source: https://www.cut-the-knot.org/recurrence/hanoi.shtml
@@ -61,7 +56,15 @@ Q[2,2] = np.radians([-56.15,-119.15,-103.80,-46.96,90.33,22.00])
 Q[2,3] = np.radians([-56.15,-109.84,-96.94,-63.13,90.36,21.90])
 
 
+
+
+
+
 ############### Your Code End Here ###############
+ 
+ 
+
+ 
  
 ############## Your Code Start Here ##############
 
@@ -73,10 +76,12 @@ def gripper_input_callback(msg):
 	global current_io_0
 	global digital_in_0
 	global analog_in_0
-	
+
 	digital_in_0 = msg.digital_in_states
 	analog_in_0 = msg.analog_in_states
 	current_io_0 = msg.flag_states
+
+
  
 ############### Your Code End Here ###############
  
@@ -118,12 +123,20 @@ def gripper(pub_setio, io_0):
 	msg.pin = 0
 	msg.state = io_0
 	pub_setio.publish(msg)
-	time.sleep(1)
+	time.sleep(2)
 
 
 ############### Your Code End Here ###############
  
 def move_arm(pub_setjoint, dest):
+	"""
+	Move the arm to a specific location
+
+	Parameters:
+	pub_set_joint: Publisher for setting joint positions.
+	dest, the end location
+	"""
+
 	msg = JointTrajectory()
 	msg.joint_names = ["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint","wrist_1_joint", "wrist_2_joint", "wrist_3_joint"]
 	point = JointTrajectoryPoint()
@@ -139,53 +152,53 @@ TODO: function to move block from start to end
 """
 ### Hint: Use the Q array to map out your towers by location and height.
 
-def move_block(pub_setjoint, pub_setio, start_loc, start_height, end_loc, end_height):
-    global Q
+def move_block(pub_set_joint, pub_set_io, start_loc, start_height, end_loc, end_height):
+    """
+    Move a block from one location to another.
 
-    # Turn off suction before starting
-    gripper(pub_setio, suction_off)
-    time.sleep(1)
+    Parameters:
+    pub_set_joint: Publisher for setting joint positions.
+    pub_set_io: Publisher for setting input/output (e.g., gripper).
+    start_loc: Starting location index.
+    start_height: Height index at the start location.
+    end_loc: Ending location index.
+    end_height: Height index at the end location.
+    """
+    global Q  # Consider revising the use of the global variable `Q`.
 
-    # Move above the start block
-    move_arm(pub_setjoint, Q[start_loc][3])
-    time.sleep(1)
+    # Move above the start block.
+    move_arm(pub_set_joint, Q[start_loc][3])
 
-    # Lower to the start block
-    move_arm(pub_setjoint, Q[start_loc][start_height])
-    time.sleep(1)
+    # Lower to the start block.
+    move_arm(pub_set_joint, Q[start_loc][start_height])
 
-    # Turn on suction to pick up the block
-    gripper(pub_setio, suction_on)
-    time.sleep(1)
+    # Activate the gripper to pick up the block.
+    gripper(pub_set_io, True)  # True is assumed to enable suction.
 
-    # Move up with the block
-    move_arm(pub_setjoint, Q[start_loc][3])
-    time.sleep(1)
+    # Elevate with the block.
+    move_arm(pub_set_joint, Q[start_loc][3])
 
-    # Move above the end block
-    move_arm(pub_setjoint, Q[end_loc][3])
-    time.sleep(1)
+    # Navigate above the end block.
+    move_arm(pub_set_joint, Q[end_loc][3])
 
-    # Lower to the end block position
-    move_arm(pub_setjoint, Q[end_loc][end_height])
-    time.sleep(1)
+    # Descend to the end block's position.
+    move_arm(pub_set_joint, Q[end_loc][end_height])
 
-    # Turn off suction to release the block
-    gripper(pub_setio, suction_off)
-    time.sleep(1)
+    # Deactivate the gripper to release the block.
+    gripper(pub_set_io, False)  # False is assumed to disable suction.
 
-    # Move back up
-    move_arm(pub_setjoint, Q[end_loc][3])
-    time.sleep(1)
+    # Ascend back to the initial height.
+    move_arm(pub_set_joint, Q[end_loc][3])
 
-# todo: debug the start height and end height
-def hanoi(n, start, mid, end,pub_setjoint, pub_setio):
-    if n == 1:
-        move_block(pub_setjoint, pub_setio, start, 0, end, 2)
-    else:
-        hanoi(n-1, start, end, mid)
-        move_block(pub_setjoint, pub_setio, start, 0, end, 2)
-        hanoi(n-1, mid, start, end)
+
+
+# def hanoi(n, start, mid, end,pub_setjoint, pub_setio):
+#     if n == 1:
+#         move_block(pub_setjoint, pub_setio, start, 0, end, 2)
+#     else:
+#         hanoi(n-1, start, end, mid)
+#         move_block(pub_setjoint, pub_setio, start, 0, end, 2)
+#         hanoi(n-1, mid, start, end)
 
  
 ############### Your Code End Here ###############
@@ -210,13 +223,6 @@ def main():
     # | Q[0][2][0] Q[1][2][0] Q[2][2][0] |   Contact point of third block
     # | Q[0][1][0] Q[1][1][0] Q[2][1][0] |   Contact point of second block
     # | Q[0][0][0] Q[1][0][0] Q[2][0][0] |   Contact point of bottom block
-
- # TODO 
-	# - problem is at the addressing of Q, which doesn't align with above 
-	# - why do we need so many contact and above point? to check that, currenly, all we have is simply the contact point 
-	# - if cont, can it work ? or we must to construct a same structure 
-	# - 
-
 
     # First index - From left to right position A, B, C
     # Second index - From "bottom" to "top" position 1, 2, 3
@@ -267,27 +273,16 @@ def main():
 	des = 2
 
 	while(not input_done):
-		input_string = input("Enter number of loops <Either 1 2 3 or 0 to quit>: ")
+		input_string = input("Enter number of loops <Either 1 2 3 or 0 to quit> ")
 		print("You entered " + input_string + "\n")
+		input_string2 = input("Enter number of loops <Either 1 2 3 or 0 to quit> ")	
+		print("You entered " + input_string2 + "\n")
+		
+		start = int(input_string)
+		des = int(input_string2)
+		another = 3 - start - des
 
-		if(int(input_string) == 1):
-			input_done = 1
-			loop_count = 1
-		elif (int(input_string) == 2):
-			input_done = 1
-			loop_count = 2
-		elif (int(input_string) == 3):
-			input_done = 1
-			loop_count = 3
-		elif (int(input_string) == 0):
-			print("Quitting... ")
-			# sys.exit()
-		else:
-			print("Please just enter the character 1 2 3 or 0 to quit \n\n")
-
-
-
-
+		input_done = 1
 			
 
 	############### Your Code End Here ###############
@@ -299,26 +294,29 @@ def main():
 	rospy.loginfo("Sending Goals ...")
  
 	loop_rate = rospy.Rate(SPIN_RATE)
-	# TODO what is this?
-	
+ 
 	############## Your Code Start Here ##############
 	# TODO: modify the code so that UR3 can move tower accordingly from user input
  
-	hanoi(3,start,mid, des, pub_setjoint,pub_setio)
-	move_block(pub_setjoint, pub_setio, start, 0, des,   2)
+	# set to home before start
+	move_arm(pub_setjoint, home)
+
+	move_block(pub_setjoint, pub_setio, start, 2, des, 0)
+	move_block(pub_setjoint, pub_setio, start, 1, mid, 0)
+	move_block(pub_setjoint, pub_setio, des, 0, mid, 1)
+	move_block(pub_setjoint, pub_setio, start, 0, des, 0)
+	move_block(pub_setjoint, pub_setio, mid, 1, start, 0)
+	move_block(pub_setjoint, pub_setio, mid, 0, des, 1)
+	move_block(pub_setjoint, pub_setio, start, 0, des, 2)
 	
-
-
-
-
-	
- 
+	move_arm(pub_setjoint, home)
  
 	############### Your Code End Here ###############
  
  
  
 if __name__ == '__main__':
+
 	
 	try:
 		main()

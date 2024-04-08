@@ -22,45 +22,35 @@ Use 'expm' for matrix exponential
 Angles are in radian, distance are in meters.
 """
 
-# def Get_MS():
-# 	# =================== Your code starts here ====================#
-# 	# Fill in the correct values for S1~6, as well as the M matrix
-# 	M = np.eye(4)
-# 	S = np.zeros((6,6))
 
-
-	
-
-
-
-
-# 	# ==============================================================#
-# 	return M, S
 def Get_MS():
-    # Screw axes S1 to S6 in the robot's base frame
-    S = np.array([
-        [0,         0,         1,      0,      0,      0],
-        [1,         0,         0,      -0.162, 0,      0.150],
-        [1,         0,         0,      -0.162, 0,      0.420],
-        [0,         1,         0,      0.094,  -0.420, 0],
-        [1,         0,         0,      -0.162, 0,      0.726],
-        [0,         1,         0,      0.094,  -0.726, 0]
-    ]).T  # Transposed to match the (6,6) shape
+    # 	# Fill in the correct values for S1~6, as well as the M matrix
+    M = np.eye(4)
+    S = np.zeros((6,6))
 
-    # Home configuration matrix M
-    M = np.array([
-        [1, 0, 0,     0.150],
-        [0, 1, 0,     0],
-        [0, 0, 1,     0.726],
-        [0, 0, 0,     1]
-    ])
+    # Home position of the end-effector 
+    M = np.array([[1, 0, 0, 0.223],  # Orientation part
+                  [0, 1, 0, -0.541],  # Adjust these values based on the UR3e's end-effector home position
+                  [0, 0, 1, -0.249],  # and orientation in the zero configuration
+                  [0, 0, 0, 1]])     # Homogeneous component
+
+    # Screw axes for all six joints in the space frame
+    # Assuming placeholder values, adjust based on actual geometry of UR3e
+    S = np.array([[0, 0, 1, 0, 0, 0],  # S1 for joint 1
+                  [0, 1, 0, -0.152, 0, 0],  # S2 for joint 2
+                  [0, 1, 0, -0.152, 0, 0.244], # S3 for joint 3
+                  [0, 1, 0, -0.152, 0, 0.457], # S4 for joint 4
+                  [0, 0, 1, 0.104, 0.457, 0], # S5 for joint 5
+                  [0, 1, 0, 0.104, 0.457, 0.213]]) # S6 for joint 6
 
     return M, S
+
 
 
 """
 Function that calculates encoder numbers for each motor
 """
+	# =========== Implement joint angle to encoder expressions here ===========
 
 def lab_fk(theta1, theta2, theta3, theta4, theta5, theta6):
     # Convert joint angles from degrees to radians
@@ -92,26 +82,6 @@ def skew(s):
         [0,      0,      0,    0]
     ])
 
-
-# def lab_fk(theta1, theta2, theta3, theta4, theta5, theta6):
-
-# 	# =========== Implement joint angle to encoder expressions here ===========
-# 	print("Forward kinematics calculated:\n")
-
-# 	# =================== Your code starts here ====================#
-
-
-
-
-
-
-
-
-
-# 	# ==============================================================#
-	
-# 	print(str(T) + "\n")
-# 	return T
 
 
 

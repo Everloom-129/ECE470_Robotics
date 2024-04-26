@@ -13,7 +13,6 @@ Angles are in radian, distance are in meters.
 """
 
 def Get_MS():
-	# =================== Your code starts here ====================#
 	# Fill in the correct values for S1~6, as well as the M matrix
 	M = np.eye(4)
 	S = np.zeros((6,6))
@@ -30,9 +29,6 @@ def Get_MS():
 	M[1] = np.array([0,1,0,-0.542])
 	M[2] = np.array([-1,0,0,0.152])
 	M[3] = np.array([0,0,0,1])
-
-
-	# ==============================================================#
 	return M, S
 
 
@@ -40,26 +36,17 @@ def Get_MS():
 Function that calculates encoder numbers for each motor
 """
 def lab_fk(theta1, theta2, theta3, theta4, theta5, theta6):
-
-	# =========== Implement joint angle to encoder expressions here ===========
-
-	# =================== Your code starts here ====================#
 	theta = np.array([theta1 - 0.5 * PI, theta2, theta3, theta4 + 0.5 * PI, theta5, theta6])
 	M,S = Get_MS()
 	print(f"M is :\n{M}\n\n")
 	print(f"S is :\n{S}\n\n")
 	T = np.eye(4)
-
 	for i in range(6):
 		T = np.dot(T, expm(skew(S[:,i])*theta[i]))
-
 	T = np.dot(T,M)
-	
 	print("Forward kinematics calculated:\n")
 	print(f"T is :\n{T}\n\n")
 	return T
-
-
 
 def skew(s):
 	return np.array([

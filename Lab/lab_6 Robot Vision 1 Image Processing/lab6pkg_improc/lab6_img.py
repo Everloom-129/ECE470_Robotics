@@ -220,15 +220,14 @@ def main():
 
     # init image path
     # template image for template matching of rectangle and ellipse
-    path_template = "../img/template.jpg"
+    path_template = "img/template.jpg"
     # two calibrattoion images to calculate the image coordinate
     # with corresponding image coordinate and robot coordinate, 
     # a linear transformation between image coordinate and robot coordinate can be computed
-    # path_img_cali1 = '../img/img_cali_1.bmp'
-    path_img_cali1 = '../img/one_rect.png'
-    path_img_cali2 = '../img/one_elip.png'
+    path_img_cali1 = 'myimg/one rect.png'
+    path_img_cali2 = 'myimg/one elip.png'
     # snapshot image saved by your camera
-    path_img_snap = '../img/four_1.png'
+    path_img_snap = 'myimg/all 1.png'
 
     # init ImageProcess class
     img_process = ImageProcess()
@@ -239,7 +238,6 @@ def main():
     # image process for calibration images to get the position of blocks
     center_cali1, shape_cali1, theta_cali1 = img_process.image_process(path_img_cali1)
     print("finished 1")
-
 
     center_cali2, shape_cali2, theta_cali2 = img_process.image_process(path_img_cali2)
     print("finished 2")

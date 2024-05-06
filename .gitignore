@@ -9,6 +9,7 @@ __pycache__/
 
 # self-defined
 email/
+lecture_note/
 
 # Distribution / packaging
 .Python
